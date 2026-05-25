@@ -5,10 +5,11 @@ from typing import Any
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.event import async_track_time_change
 
 from .const import (
     DOMAIN,
@@ -116,7 +117,6 @@ class VacancesScolairesSensor(CoordinatorEntity, SensorEntity):
             model="API",
         )
 
-
 class VacancesScolairesAujourdHuiSensor(CoordinatorEntity, SensorEntity):
     """Sensor for 'Are we on vacation today?'."""
 
@@ -135,6 +135,25 @@ class VacancesScolairesAujourdHuiSensor(CoordinatorEntity, SensorEntity):
             self._attr_unique_id = f"{DOMAIN}_{config_type}_{zone}_today"
             self._attr_name = f"Vacances Scolaires Aujourd'hui {zone}"
         self._attr_attribution = ATTRIBUTION
+
+    async def async_added_to_hass(self) -> None:
+        """Register midnight update callback."""
+        await super().async_added_to_hass()
+
+        self.async_on_remove(
+            async_track_time_change(
+                self.hass,
+                self._handle_midnight_update,
+                hour=0,
+                minute=0,
+                second=5,
+            )
+        )
+
+    @callback
+    def _handle_midnight_update(self, now: datetime) -> None:
+        """Force state refresh at midnight."""
+        self.async_write_ha_state()
 
     @property
     def native_value(self) -> str | None:
@@ -172,7 +191,6 @@ class VacancesScolairesAujourdHuiSensor(CoordinatorEntity, SensorEntity):
             model="API",
         )
 
-
 class VacancesScolairesDemainSensor(CoordinatorEntity, SensorEntity):
     """Sensor for 'Are we on vacation tomorrow?'."""
 
@@ -191,6 +209,25 @@ class VacancesScolairesDemainSensor(CoordinatorEntity, SensorEntity):
             self._attr_unique_id = f"{DOMAIN}_{config_type}_{zone}_tomorrow"
             self._attr_name = f"Vacances Scolaires Demain {zone}"
         self._attr_attribution = ATTRIBUTION
+
+    async def async_added_to_hass(self) -> None:
+        """Register midnight update callback."""
+        await super().async_added_to_hass()
+
+        self.async_on_remove(
+            async_track_time_change(
+                self.hass,
+                self._handle_midnight_update,
+                hour=0,
+                minute=0,
+                second=5,
+            )
+        )
+
+    @callback
+    def _handle_midnight_update(self, now: datetime) -> None:
+        """Force state refresh at midnight."""
+        self.async_write_ha_state()
 
     @property
     def native_value(self) -> str | None:
