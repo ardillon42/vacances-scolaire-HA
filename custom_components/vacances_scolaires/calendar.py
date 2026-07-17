@@ -33,18 +33,21 @@ def convert_to_iso_format(date_str: str, location: str | None = None) -> str:
         "décembre": "12",
     }
 
-    # Extraire les parties de la date
-    day, month_str, year, _, time_str, _ = date_str.split(" ")
-
-    # Convertir le mois en chiffre
-    month = mois[month_str.lower()]
+    # Extraire les parties de la date au format "DD mois YYYY à HH:MM:SS"
+    parts = date_str.split(" ")
+    if len(parts) != 5:
+        raise ValueError(f"Date string format incorrect: '{date_str}'")
+    day, month_str, year, _, time_str = parts
+    # Convertir le mois en chiffre avec vérification
+    month = mois.get(month_str.lower())
+    if month is None:
+        raise ValueError(f"Mois inconnu dans la date: '{month_str}'")
 
     # Créer la chaîne avec le format ISO attendu
     iso_format_date = f"{year}-{month}-{day}T{time_str}"
 
     # Retourner la date au format ISO
     return iso_format_date
-
 
 class VacancesScolairesCalendar(CoordinatorEntity, CalendarEntity):
     """Vacances Scolaires Calendar class."""

@@ -72,6 +72,44 @@ Le "state" retournera :
 
 "Zone X - Holidays" ou "Zone X - Work"
 
+## Tests
+
+Pour exécuter les tests unitaires en local :
+
+### Prérequis
+
+- Python 3.12+
+- Un environnement virtuel (recommandé)
+
+### Installation des dépendances de développement
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Linux/macOS
+# ou
+.venv\Scripts\activate     # Windows
+
+pip install -r requirements.txt
+pip install homeassistant pytest pytest-asyncio
+```
+
+### Lancer les tests
+
+```bash
+pytest -q
+```
+
+Tous les tests se trouvent dans le dossier `tests/`. Le fichier `pytest.ini` à la racine configure automatiquement le `PYTHONPATH` afin que `custom_components` soit importable sans configuration supplémentaire.
+
+### Structure des tests
+
+```
+tests/
+└── test_calendar.py   # Tests unitaires de la conversion de date et du calendrier
+```
+
+---
+
 ## Contribution
 
 Les contributions à ce projet sont les bienvenues. N'hésitez pas à soumettre des pull requests ou à ouvrir des issues pour des suggestions d'amélioration ou des rapports de bugs.
